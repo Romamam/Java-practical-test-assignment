@@ -71,6 +71,24 @@ public class UserService {
         }
     }
 
+    public User updateAllUserFields(UUID id, String email, String firstName, String lastName, String birthDate,
+                                    String address, int phoneNumber) throws UserNotFoundException {
+        User userToUpdate = getUserById(id);
+
+        if (userToUpdate != null) {
+            userToUpdate.setEmail(email);
+            userToUpdate.setFirstName(firstName);
+            userToUpdate.setLastName(lastName);
+            userToUpdate.setBirthDate(birthDate);
+            userToUpdate.setAddress(address);
+            userToUpdate.setPhoneNumber(phoneNumber);
+
+            return userToUpdate;
+        } else {
+            throw new UserNotFoundException("User with ID " + id + " not found");
+        }
+    }
+
     public User getUserById(UUID id) {
         return users.stream()
                 .filter(user -> id.equals(user.getId()))
