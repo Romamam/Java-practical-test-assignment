@@ -89,6 +89,11 @@ public class UserService {
         }
     }
 
+    public void deleteUser(UUID id){
+        User user = getUserById(id);
+        users.remove(user);
+    }
+
     public User getUserById(UUID id) {
         return users.stream()
                 .filter(user -> id.equals(user.getId()))
