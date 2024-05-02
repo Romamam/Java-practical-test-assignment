@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.model.User;
+import com.example.demo.util.PartialUserUpdateRequest;
 import com.example.demo.util.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,10 @@ public class UserService {
     private List<User> users = new ArrayList<>();
 
     {
-        users.add(new User("user1@exasdample.com", "Joasdhn", "Dasdoe","30.04.2002"));
-        users.add(new User("user1@exasdasdample.com", "Joasdhasdn", "Dasasddoe","30.04.2003"));
-        users.add(new User("user1@exasasddample.com", "Joasdhn", "Dasasasdddoe","30.04.2004"));
-        users.add(new User("user1@exasasddample.com", "Joasdhn", "Daasdsdoe","30.04.2005"));
+        users.add(new User(UUID.randomUUID(),"user1@exasdample.com", "Joasdhn", "Dasdoe","30.04.2002"));
+        users.add(new User(UUID.randomUUID(),"user1@exasdasdample.com", "Joasdhasdn", "Dasasddoe","30.04.2003"));
+        users.add(new User(UUID.randomUUID(),"user1@exasasddample.com", "Joasdhn", "Dasasasdddoe","30.04.2004"));
+        users.add(new User(UUID.randomUUID(),"user1@exasasddample.com", "Joasdhn", "Daasdsdoe","30.04.2005"));
     }
 
     public List<User> getAllUsers(){
@@ -34,35 +35,35 @@ public class UserService {
     public User createUser(User user){
         if(calculateAge(user) >= minAge){
             users.add(user);
+            return user;
         }
         return null;
     }
 
-    public User updateOneOrSomeUserFields(UUID id, String email, String firstName, String lastName, String birthDate,
-                                 String address, Integer phoneNumber) throws UserNotFoundException {
+    public User updateOneOrSomeUserFields(UUID id, PartialUserUpdateRequest request) throws UserNotFoundException {
         User userToUpdate = getUserById(id);
 
         if (userToUpdate != null) {
-            if (email != null) {
-                userToUpdate.setEmail(email);
+            if (request.getEmail() != null) {
+                userToUpdate.setEmail(request.getEmail());
             }
-            if (firstName != null) {
-                userToUpdate.setFirstName(firstName);
+            if (request.getFirstName() != null) {
+                userToUpdate.setFirstName(request.getFirstName());
             }
-            if (lastName != null) {
-                userToUpdate.setLastName(lastName);
+            if (request.getLastName() != null) {
+                userToUpdate.setLastName(request.getLastName());
             }
-            if (birthDate != null) {
-                if (calculateAge(userToUpdate) < 18) {
+            if (request.getBirthDate() != null) {
+                if (calculateAge(userToUpdate) < minAge) {
                     throw new IllegalArgumentException("User must be at least 18 years old.");
                 }
-                userToUpdate.setBirthDate(birthDate);
+                userToUpdate.setBirthDate(request.getBirthDate());
             }
-            if (address != null) {
-                userToUpdate.setAddress(address);
+            if (request.getAddress() != null) {
+                userToUpdate.setAddress(request.getAddress());
             }
-            if (phoneNumber != null) {
-                userToUpdate.setPhoneNumber(phoneNumber);
+            if (request.getPhoneNumber() != null) {
+                userToUpdate.setPhoneNumber(request.getPhoneNumber());
             }
 
             return userToUpdate;

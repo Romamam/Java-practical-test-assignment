@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
+import com.example.demo.util.PartialUserUpdateRequest;
 import com.example.demo.util.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,25 +42,17 @@ public class UserController {
         }
     }
 
-    @PutMapping("/users/{id}")
+    @PatchMapping("/users/{id}")
     public ResponseEntity<Object> updateOneOrSomeUserFields(@PathVariable UUID id,
-                                                            @RequestBody User user) {
+                                                            @RequestBody PartialUserUpdateRequest request) {
         try {
-            User updatedUser = userService.updateUserFields(id,
-                    user.getEmail(),
-                    user.getFirstName(),
-                    user.getLastName(),
-                    user.getBirthDate(),
-                    user.getAddress(),
-                    user.getPhoneNumber());
+            User updatedUser = userService.updateOneOrSomeUserFields(id, request);
             return ResponseEntity.ok(updatedUser);
         } catch (UserNotFoundException ex) {
             String errorMessage = "User with ID " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
     }
-
-
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
