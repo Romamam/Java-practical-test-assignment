@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,6 +63,23 @@ public class UserController {
         } catch (UserNotFoundException ex){
             String errorMessage = "User with ID " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        }
+    }
+
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Object> deleteUser(@PathVariable UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User with ID " + id + " has been deleted successfully");
+    }
+
+    @GetMapping("/users/range-list-from-to/{fromDate}-{toDate}")
+    public ResponseEntity<List<User>> getUsersByBirthDateRange(
+            @PathVariable String fromDate, @PathVariable String toDate) {
+        try {
+            List<User> users = userService.getUsersByBirthDateRange(fromDate, toDate);
+            return ResponseEntity.ok(users);
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
         }
     }
 
