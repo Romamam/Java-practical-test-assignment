@@ -54,6 +54,17 @@ public class UserController {
         }
     }
 
+    @PutMapping("/users/{id}")
+    public ResponseEntity<Object> updateAllUserFields(@PathVariable UUID id, @RequestBody User updatedUserFields){
+        try{
+            User updatedUser = userService.updateAllUserFields(id, updatedUserFields);
+            return ResponseEntity.ok(updatedUser);
+        } catch (UserNotFoundException ex){
+            String errorMessage = "User with ID " + id + " not found";
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        }
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Object> handleUserNotFoundException(UserNotFoundException ex) {
         String errorMessage = "User not found: " + ex.getMessage();
