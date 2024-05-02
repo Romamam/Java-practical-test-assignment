@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -92,6 +93,22 @@ public class UserService {
     public void deleteUser(UUID id){
         User user = getUserById(id);
         users.remove(user);
+    }
+
+    public List<User> getUsersByBirthDateRange(String fromDateStr, String toDateStr) {
+        LocalDate fromDate = parseToDate(fromDateStr);
+        LocalDate toDate = parseToDate(toDateStr);
+
+        if (fromDate.isAfter(toDate)) {
+            throw new IllegalArgumentException("'From' date should be before 'To' date");
+        }
+
+        return users.stream()
+                .filter(user -> {
+                    LocalDate userBirthDate = parseToDate(user.getBirthDate());
+                    return userBirthDate.isAfter(fromDate) && userBirthDate.isBefore(toDate);
+                })
+                .collect(Collectors.toList());
     }
 
     public User getUserById(UUID id) {
