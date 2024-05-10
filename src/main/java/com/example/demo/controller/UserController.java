@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -22,19 +23,19 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/users")
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/users")
+    @PostMapping
     public ResponseEntity<User> createUser(@Valid @RequestBody User user){
         User newUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
 
-    @GetMapping("/users/{id}")
+    @GetMapping("{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) throws UserNotFoundException {
         User user = userService.getUserById(id);
         if(user != null){
@@ -44,7 +45,7 @@ public class UserController {
         }
     }
 
-    @PatchMapping("/users/{id}")
+    @PatchMapping("{id}")
     public ResponseEntity<Object> updateOneOrSomeUserFields(@PathVariable UUID id,
                                                             @Valid @RequestBody PartialUserUpdateRequest request) {
         try {
@@ -56,7 +57,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("/users/{id}")
+    @PutMapping("{id}")
     public ResponseEntity<Object> updateAllUserFields(@PathVariable UUID id, @Valid @RequestBody User updatedUserFields){
         try{
             User updatedUser = userService.updateAllUserFields(id, updatedUserFields);
@@ -67,13 +68,13 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<Object> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("User with ID " + id + " has been deleted successfully");
     }
 
-    @GetMapping("/users/range-list-from-to/{fromDate}-{toDate}")
+    @GetMapping("range-list-from-to/{fromDate}-{toDate}")
     public ResponseEntity<List<User>> getUsersByBirthDateRange(
             @PathVariable String fromDate, @PathVariable String toDate) {
         try {
