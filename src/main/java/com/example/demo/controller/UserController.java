@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.UserUnderAgeException;
 import com.example.demo.model.User;
 import com.example.demo.service.UserService;
 import com.example.demo.util.PartialUserUpdateRequest;
@@ -30,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user){
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) throws UserUnderAgeException {
         User newUser = userService.createUser(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(newUser);
     }
@@ -41,28 +42,32 @@ public class UserController {
         if(user != null){
             return ResponseEntity.ok(user);
         } else {
-            throw new UserNotFoundException("Uesr with ID " + id + " not found");
+            throw new UserNotFoundException("User with ID " + id + " not found");
         }
     }
 
     @PatchMapping("{id}")
     public ResponseEntity<Object> updateOneOrSomeUserFields(@PathVariable UUID id,
-                                                            @Valid @RequestBody PartialUserUpdateRequest request) {
+                                                            @Valid @RequestBody PartialUserUpdateRequest request) throws UserUnderAgeException {
         try {
             User updatedUser = userService.updateOneOrSomeUserFields(id, request);
             return ResponseEntity.ok(updatedUser);
         } catch (UserNotFoundException ex) {
             String errorMessage = "User with ID " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+        } catch (UserUnderAgeException ex) {
+            String errorMessage = "User must be at least 18 years old";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
         }
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Object> updateAllUserFields(@PathVariable UUID id, @Valid @RequestBody User updatedUserFields){
+
         try{
             User updatedUser = userService.updateAllUserFields(id, updatedUserFields);
             return ResponseEntity.ok(updatedUser);
-        } catch (UserNotFoundException ex){
+        } catch (UserNotFoundException ex) {
             String errorMessage = "User with ID " + id + " not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }

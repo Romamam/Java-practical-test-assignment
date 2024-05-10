@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.exception.UserUnderAgeException;
 import com.example.demo.model.User;
 import com.example.demo.util.PartialUserUpdateRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,15 +34,16 @@ public class UserService {
         return users;
     }
 
-    public User createUser(User user){
+    public User createUser(User user) throws UserUnderAgeException {
         if(calculateAge(user) >= minAge){
             users.add(user);
             return user;
+        } else {
+            throw new UserUnderAgeException("User must be at least 18 years old");
         }
-        return null;
     }
 
-    public User updateOneOrSomeUserFields(UUID id, PartialUserUpdateRequest request) throws UserNotFoundException {
+    public User updateOneOrSomeUserFields(UUID id, PartialUserUpdateRequest request) throws UserNotFoundException, UserUnderAgeException {
         User userToUpdate = getUserById(id);
 
         if (userToUpdate != null) {
@@ -56,7 +58,7 @@ public class UserService {
             }
             if (request.getBirthDate() != null) {
                 if (calculateAge(userToUpdate) < minAge) {
-                    throw new IllegalArgumentException("User must be at least 18 years old.");
+                    throw new UserUnderAgeException("User must be at least 18 years old.");
                 }
                 userToUpdate.setBirthDate(request.getBirthDate());
             }

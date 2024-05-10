@@ -25,4 +25,18 @@ public class GlobalExceptionHandler {
         String errorMessage = "User not found: " + ex.getMessage();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseBody
+    public ResponseEntity<Object> handleGenericException(Exception ex) {
+        String errorMessage = "An unexpected error occurred: " + ex.getMessage();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorMessage);
+    }
+
+    @ExceptionHandler(UserUnderAgeException.class)
+    @ResponseBody
+    public ResponseEntity<Object> handleUserUnderAgeException(UserUnderAgeException ex) {
+        String errorMessage = "User must be at least 18 years old: " + ex.getMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
+    }
 }
