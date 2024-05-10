@@ -36,7 +36,7 @@ public class UserControllerTest {
 
     @BeforeEach
     void setUp() {
-        testUser = new User(UUID.randomUUID(), "test@example.com", "John", "Doe", "01.02.1991");
+        testUser = new User("test@example.com", "John", "Doe", "01.02.1991");
     }
 
     @Test
